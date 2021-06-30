@@ -39,7 +39,6 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
-        //Todo 2: change kotlin version to 1.5.10
         kotlinCompilerVersion '1.5.10'
     }
 }

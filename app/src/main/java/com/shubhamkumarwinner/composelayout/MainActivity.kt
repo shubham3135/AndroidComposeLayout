@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Doorbell
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -28,11 +31,40 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComposeLayoutTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colors.background) {
+                /*Surface(color = MaterialTheme.colors.background) {
                     PhotographerCard()
-                }
+                }*/
+                LayoutCodelab()
             }
         }
+    }
+}
+
+@Composable
+fun LayoutCodelab(){
+    Scaffold(topBar = {
+        TopAppBar(
+            title = {
+                Text(
+                    text = "LayoutsCodelab"
+                )
+            },
+            actions = {
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(Icons.Filled.Doorbell, contentDescription = null)
+                }
+            }
+        )
+    }) { innerPadding ->
+        BodyContent(Modifier.padding(innerPadding).padding(8.dp))
+    }
+}
+
+@Composable
+fun BodyContent(modifier: Modifier = Modifier){
+    Column(modifier = modifier.padding(8.dp)) {
+        Text(text = "Hi there!")
+        Text(text = "Thanks for joining this codelab")
     }
 }
 
@@ -74,7 +106,7 @@ fun PhotographerCard(modifier: Modifier = Modifier){
     }
 }
 
-@Preview
+//@Preview
 @Composable
 fun PhotographerCardPreview() {
     ComposeLayoutTheme {
@@ -86,6 +118,6 @@ fun PhotographerCardPreview() {
 @Composable
 fun DefaultPreview() {
     ComposeLayoutTheme {
-        Greeting("Android")
+        LayoutCodelab()
     }
 }

@@ -30,3 +30,9 @@ x
 Happ/src/main/java/com/shubhamkumarwinner/composelayout/ui/theme/Theme.kt,5\d\5d15920023972ab5634417690c9dc3d7dfaac4b0
 w
 Gapp/src/main/java/com/shubhamkumarwinner/composelayout/ui/theme/Type.kt,d\a\da8b3c73680760d36d0f7470840a5145226c7778
+@
+app/build.gradle,f\4\f4a01d6a4fcb971362ec00a83903fd3902f52164
+<
+build.gradle,f\0\f07866736216be0ee2aba49e392191aeae700a35
+v
+Fapp/src/main/java/com/shubhamkumarwinner/composelayout/MainActivity.kt,b\e\bed50cc01b42647781bf5ffe4ec80b363d0e8fe4

@@ -21,14 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.AlignmentLine
-import androidx.compose.ui.layout.FirstBaseline
-import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.layout.layout
+import androidx.compose.ui.layout.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.compose.atLeast
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.glide.rememberGlidePainter
 import com.shubhamkumarwinner.composelayout.ui.theme.ComposeLayoutTheme
@@ -56,8 +57,96 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-//Custom complex layout
+// Constraint layout
+@Composable
+fun ConstraintLayoutContent(){
+    ConstraintLayout {
+        val (button1, button2, text) = createRefs()
 
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.constrainAs(button1){
+                top.linkTo(parent.top, margin = 16.dp)
+            }
+        ) {
+            Text(text = "Button 1")
+        }
+        
+        Text(text = "Text", modifier = Modifier.constrainAs(text){
+            top.linkTo(button1.bottom, margin = 16.dp)
+            centerAround(button1.end)
+        })
+
+        val barrier = createEndBarrier(button1, text)
+        Button(
+            onClick = { /*TODO*/ },
+            modifier = Modifier.constrainAs(button2){
+                top.linkTo(parent.top, margin = 16.dp)
+                start.linkTo(barrier)
+            }
+        ) {
+            Text(text = "Button 2")
+        }
+    }
+}
+
+// Constraint layout
+@Composable
+fun LargeConstraintLayout(){
+    ConstraintLayout {
+        val text = createRef()
+        val guideline = createGuidelineFromStart(fraction = 0.5f)
+
+        Text(
+            "This is a very very very very very very very long text",
+            Modifier.constrainAs(text) {
+                linkTo(start = guideline, end = parent.end)
+                width = Dimension.preferredWrapContent.atLeast(100.dp)
+            }
+        )
+    }
+}
+
+// Constraint layout
+@Composable
+fun DecoupledConstraintLayout(){
+    BoxWithConstraints {
+        val constraints = if (maxWidth < maxHeight) {
+            decoupledConstraints(margin = 16.dp) // Portrait constraints
+        } else {
+            decoupledConstraints(margin = 32.dp) // Landscape constraints
+        }
+
+        ConstraintLayout(constraints) {
+            Button(
+                onClick = { /* Do something */ },
+                modifier = Modifier.layoutId("button")
+            ) {
+                Text("Button")
+            }
+
+            Text("Text", Modifier.layoutId("text"))
+        }
+    }
+}
+
+// Constraint layout
+private fun decoupledConstraints(margin: Dp): ConstraintSet {
+    return ConstraintSet {
+        val button = createRefFor("button")
+        val text = createRefFor("text")
+
+        constrain(button){
+            top.linkTo(parent.top, margin = margin)
+        }
+
+        constrain(text){
+            top.linkTo(button.bottom, margin = margin)
+        }
+    }
+}
+
+//Custom complex layout
 @Composable
 fun StaggeredGrid(
     modifier: Modifier = Modifier,
@@ -223,19 +312,9 @@ fun LayoutCodelab(){
 
 @Composable
 fun BodyContent(modifier: Modifier = Modifier){
-    val topics = listOf(
-        "Arts & Crafts", "Beauty", "Books", "Business", "Comics", "Culinary",
-        "Design", "Fashion", "Film", "History", "Maths", "Music", "People", "Philosophy",
-        "Religion", "Social sciences", "Technology", "TV", "Writing"
-    )
-
-    Row(modifier = modifier.horizontalScroll(rememberScrollState())) {
-        StaggeredGrid{
-            for (topic in topics) {
-                Chip(modifier = Modifier.padding(8.dp), text = topic)
-            }
-        }
-    }
+//    ConstraintLayoutContent()
+//    LargeConstraintLayout()
+    DecoupledConstraintLayout()
 }
 
 @Composable

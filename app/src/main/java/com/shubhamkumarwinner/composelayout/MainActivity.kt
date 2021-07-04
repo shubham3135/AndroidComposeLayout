@@ -20,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.layout.FirstBaseline
 import androidx.compose.ui.layout.Layout
@@ -32,6 +33,7 @@ import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.glide.rememberGlidePainter
 import com.shubhamkumarwinner.composelayout.ui.theme.ComposeLayoutTheme
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +53,78 @@ class MainActivity : ComponentActivity() {
 //                ImageList()
             }
         }
+    }
+}
+
+//Custom complex layout
+
+@Composable
+fun StaggeredGrid(
+    modifier: Modifier = Modifier,
+    rows: Int = 3,
+    content: @Composable () -> Unit
+){
+    Layout(content = content, modifier = modifier){measurables, constraints ->
+        val rowWidths = IntArray(rows){0}
+        val rowHeights = IntArray(rows){0}
+
+        val placeables = measurables.mapIndexed{index, measurable ->
+            val placeable = measurable.measure(constraints)
+
+            val row = index % rows
+            rowWidths[row] += placeable.width
+            rowHeights[row] = max(rowHeights[row], placeable.height)
+
+            placeable
+        }
+
+        val width = rowWidths.maxOrNull()?.coerceIn(constraints.minWidth.rangeTo(constraints.maxWidth))
+            ?: constraints.minWidth
+
+        val height = rowHeights.sumOf { it }
+            .coerceIn(constraints.minHeight.rangeTo(constraints.maxHeight))
+
+        val rowY = IntArray(rows) { 0 }
+        for (i in 1 until rows) {
+            rowY[i] = rowY[i-1] + rowHeights[i-1]
+        }
+
+        layout(width, height) {
+            // x cord we have placed up to, per row
+            val rowX = IntArray(rows) { 0 }
+
+            placeables.forEachIndexed { index, placeable ->
+                val row = index % rows
+                placeable.placeRelative(
+                    x = rowX[row],
+                    y = rowY[row]
+                )
+                rowX[row] += placeable.width
+            }
+        }
+    }
+}
+
+//Custom complex layout
+@Composable
+fun Chip(modifier: Modifier = Modifier, text: String){
+    Card(
+        modifier = modifier,
+        border = BorderStroke(color = Color.Black, width = Dp.Hairline),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(modifier = Modifier
+                .size(16.dp, 16.dp)
+                .background(color = MaterialTheme.colors.secondary))
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(text = text)
+
+        }
+
     }
 }
 
@@ -149,19 +223,19 @@ fun LayoutCodelab(){
 
 @Composable
 fun BodyContent(modifier: Modifier = Modifier){
-    Column(modifier = modifier.padding(8.dp)) {
-        Text(text = "Hi there!", modifier = Modifier.firstBaselineToTop(32.dp))
-        Text(text = "Thanks for joining this codelab")
+    val topics = listOf(
+        "Arts & Crafts", "Beauty", "Books", "Business", "Comics", "Culinary",
+        "Design", "Fashion", "Film", "History", "Maths", "Music", "People", "Philosophy",
+        "Religion", "Social sciences", "Technology", "TV", "Writing"
+    )
 
-        MyOwnColumn(modifier.padding(8.dp)) {
-            Text("MyOwnColumn")
-            Text("places items")
-            Text("vertically.")
-            Text("We've done it by hand!")
+    Row(modifier = modifier.horizontalScroll(rememberScrollState())) {
+        StaggeredGrid{
+            for (topic in topics) {
+                Chip(modifier = Modifier.padding(8.dp), text = topic)
+            }
         }
     }
-
-
 }
 
 @Composable
@@ -253,6 +327,6 @@ fun PhotographerCardPreview() {
 @Composable
 fun DefaultPreview() {
     ComposeLayoutTheme {
-        BodyContent()
+        Chip(text = "Hi Shubham")
     }
 }
